@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>Tutorials Point Pong Game</title>
+  <style>
+    body {
+      background: #BEB9B9;
+    }
+
+    canvas {
+      background: black;
+      display: block;
+      margin: auto;
+      border-color: white;
+      border-style: solid;
+      border-width: 10px;
+      border-radius: 3%;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="board" width="500em" height="500em"> </canvas>
+  <script>
+
+    let canvas = document.getElementById("board");
+    var ctx = canvas.getContext("2d");
+    var x = canvas.width / 2;
+    var y = canvas.height / 2;
+    rnum = [-3, -2, 2, 3]
+    var dx = Math.floor(Math.random() * (3 - -3 + 1)) + -3;
+    var dy = Math.floor(Math.random() * (3 - -3 + 1)) + -3;
+    var ballRadius = 10;
+
+    // varibles declared to handle the movement of paddles
+    var leftUpPressed = false;
+    var leftDownPressed = false;
+    var rightUpPressed = false;
+    var rightDownPressed = false;
+
+    function DownHandler(e) {
+      if (e.keyCode == 81) {
+        leftUpPressed = true;
+      }
+      else if (e.keyCode == 65) {
+        leftDownPressed = true;
+      }
+      if (e.keyCode == 80) {
+        rightUpPressed = true;
+      }
+      else if (e.keyCode == 186) {
+        rightDownPressed = true;
+      }
+    }
+
+    function UpHandler(e) {
+      if (e.keyCode == 81) {
+        leftUpPressed = false;
+      }
+      else if (e.keyCode == 65) {
+        leftDownPressed = false;
+      }
+      if (e.keyCode == 80) {
+        rightUpPressed = false;
+      }
+      else if (e.keyCode == 186) {
+        rightDownPressed = false;
+      }
+    }
+
+
+
+    var topLeftPressed = false;
+    var topRightPressed = false;
+    var bottomLeftPressed = false;
+    var bottomRightPressed = false;
+    function LeftHandler(e) {
+      if (e.keyCode == 90) {
+        topLeftPressed = true;
+      }
+      else if (e.keyCode == 88) {
+        topRightPressed = true;
+      }
+      if (e.keyCode == 188) {
+        bottomLeftPressed = true;
+      }
+      else if (e.keyCode == 190) {
+        bottomRightPressed = true;
+      }
+
+    }
+    function RightHandler(e) {
+      if (e.keyCode == 90) {
+        topLeftPressed = false;
+      }
+      else if (e.keyCode == 88) {
+        topRightPressed = false;
+      }
+      if (e.keyCode == 188) {
+        bottomLeftPressed = false;
+      }
+      else if (e.keyCode == 190) {
+        bottomRightPressed = false;
+      }
+
+    }
+
+    function Ball() {
+      ctx.beginPath();
+      ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
+      ctx.fillStyle = "red";
+      ctx.fill();
+      ctx.closePath();
+
+      
+    }
+    var score = 0;
+
+    function Scores() {
+      ctx.font = "80px Arial";
+      ctx.fillStyle = "Yellow";
+      ctx.fillText(leftScore, (canvas.width / 2) - 240, 490);
+      ctx.fillText(rightScore, (canvas.width / 2) + 200, 70);
+      ctx.fillText(topScore, (canvas.width /2 ) - 230, 70);
+      ctx.fillText(bottomScore, (canvas.width / 2) + 200, 490);
+    }
+function rnumX(){
+  var randomNumberArray = Math.floor(Math.random() * 5);
+  dx = rnum[randomNumberArray];
+}
+   function rnumY(){
+  var randomNumberArray = Math.floor(Math.random() * 5);
+  dy = rnum[randomNumberArray];
+}
+    function reset() {
+      x = canvas.width / 2;
+      y = canvas.height / 2;
+      rnumX();
+      rnumY();
+    }
+
+    function collisionsWithLeftPaddle() {
+      if ((x - ballRadius) <= 5 + l_PaddleWidth) {
+        if (y > l_PaddleY && y < l_PaddleY + l_PaddleHeight)
+          dx = -dx;
+        else if ((x - ballRadius) <= 0) {
+          score++;
+
+          //alert("Game Over");
+          reset();
+
+          //document.location.reload();
+        }
+      }
+    }
+
+    function collisionsWithRightPaddle() {
+      if ((x + ballRadius) >= canvas.width - (r_PaddleWidth + 5)) {
+        if (y > r_PaddleY && y < r_PaddleY + r_PaddleHeight)
+          dx = -dx;
+        else if (x + ballRadius >= canvas.width) {
+          score++;
+
+          //alert("Game Over");
+          reset();
+
+          //document.location.reload();
+        }
+      }
+    }
+
+    function collisionsWithBottomPaddle() {
+      if ((y + ballRadius) >= canvas.height - (b_PaddleHeight + 5)) {
+        if (x > b_PaddleX && x < b_PaddleX + b_PaddleWidth)
+          //alert("test")
+          dy = -dy;
+
+        else if (y + ballRadius >= canvas.height)  {
+          //alert("lose");
+          score++;
+
+          reset();
+
+        }
+      }
+    }
+
+    function collisionsWithTopPaddle() {
+      if ((y - ballRadius) <= 5 + t_PaddleHeight) {
+        if (x > t_PaddleX && x < t_PaddleX + t_PaddleWidth)
+          //alert("top paddle");
+          dy = -dy;
+
+        else if ((y - ballRadius) <= 0) {
+          score++;
+          
+
+          reset();
+
+          //document.location.reload();
+        }
+      }
+    }
+
+
+    function computeCollisionsWithWallsAndPaddle() {
+      collisionsWithLeftPaddle();
+      collisionsWithRightPaddle();
+      collisionsWithBottomPaddle();
+      collisionsWithTopPaddle();
+      
+    }
+
+
+
+
+
+
+
+    var t_PaddleHeight = 10;
+    var t_PaddleWidth = 80;
+    var t_PaddleX = (canvas.height / 2) - 40;
+
+    var t_PaddleY = 5;
+
+    function drawTopPaddle() {
+      ctx.beginPath();
+      ctx.rect(t_PaddleX, t_PaddleY, t_PaddleWidth, t_PaddleHeight);
+      ctx.fillStyle = "#4674EC";
+      ctx.fill();
+      ctx.closePath();
+
+      if (topRightPressed && t_PaddleX < canvas.width - t_PaddleWidth) {
+        t_PaddleX += 7;
+      }
+      else if (topLeftPressed && t_PaddleX > 0) {
+        t_PaddleX -= 7;
+      }
+    }
+
+
+    var b_PaddleHeight = 10;
+    var b_PaddleWidth = 80;
+    var b_PaddleX = (canvas.height / 2) - 40;
+
+    var b_PaddleY = canvas.height - (b_PaddleHeight + 5);
+    function drawBottomPaddle() {
+      ctx.beginPath();
+      ctx.rect(b_PaddleX, b_PaddleY, b_PaddleWidth, b_PaddleHeight);
+      ctx.fillStyle = "#16F389";
+      ctx.fill();
+      ctx.closePath();
+
+      if (bottomRightPressed && b_PaddleX < canvas.width - b_PaddleWidth) {
+        b_PaddleX += 7;
+      }
+      else if (bottomLeftPressed && b_PaddleX > 0) {
+        b_PaddleX -= 7;
+      }
+
+    }
+
+
+
+
+
+
+
+
+    // For left-hand side player 
+    var l_PaddleHeight = 80
+    var l_PaddleWidth = 10
+    var l_PaddleX = 5;
+    var l_PaddleY = canvas.height / 2 - l_PaddleHeight / 2;
+    function drawLeftPaddle() {
+      ctx.beginPath();
+      ctx.rect(l_PaddleX, l_PaddleY, l_PaddleWidth, l_PaddleHeight);
+      ctx.fillStyle = "#EE5252";
+      ctx.fill();
+      ctx.closePath();
+      if (leftDownPressed && l_PaddleY < canvas.height - l_PaddleHeight) {
+        l_PaddleY += 7;
+      }
+      else if (leftUpPressed && l_PaddleY > 0) {
+        l_PaddleY -= 7;
+      }
+    }
+
+    // For Right-hand side player 
+    var r_PaddleHeight = 80
+    var r_PaddleWidth = 10
+    var r_PaddleX = canvas.width - (r_PaddleWidth + 5);
+    var r_PaddleY = canvas.height / 2 - r_PaddleHeight / 2;
+    
+    function drawRightPaddle() {
+      ctx.beginPath();
+      ctx.rect(r_PaddleX, r_PaddleY, r_PaddleWidth, r_PaddleHeight);
+      ctx.fillStyle = "#B048CA";
+      ctx.fill();
+      ctx.closePath();
+      if (rightDownPressed && r_PaddleY < canvas.height - r_PaddleHeight) {
+        r_PaddleY += 7;
+      }
+      else if (rightUpPressed && r_PaddleY > 0) {
+        r_PaddleY -= 7;
+      }
+    }
+
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      /*Scores();*/
+      drawLeftPaddle();
+      drawRightPaddle();
+      drawTopPaddle();
+      drawBottomPaddle();
+      Ball();
+      computeCollisionsWithWallsAndPaddle();
+      x += dx;
+      y += dy;
+    }
+
+    if(score>4){
+      document.location.reload();
+    }
+  
+    
+    setInterval(draw, 10);
+
+    
+    document.addEventListener("keydown", DownHandler, false);
+    document.addEventListener("keyup", UpHandler, false);
+    document.addEventListener("keydown", LeftHandler, false);
+    document.addEventListener("keyup", RightHandler, false);
+  </script>
+</body>
+
+</html>
